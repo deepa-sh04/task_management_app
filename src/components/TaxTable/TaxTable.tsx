@@ -74,14 +74,12 @@ export const TaxTable: React.FC<TaxTableProps> = ({
     setShowCountryFilter(false);
   };
 
-  
   const uniqueCountries = Array.from(new Set(taxes.map(t => t.country))).sort();
   
   const filteredCountries = uniqueCountries.filter(country =>
     country.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  
   const columns = useMemo<ColumnDef<Tax>[]>(
     () => [
       {
@@ -93,29 +91,32 @@ export const TaxTable: React.FC<TaxTableProps> = ({
           </span>
         ),
       },
-      {
-        header: "Gender",
-        accessorKey: "gender",
-        cell: (info) => {
-          const gender = info.getValue() as string;
-          const genderLower = gender.toLowerCase();
-          let genderClass = 'gender-other';
-          
-          if (genderLower.includes('male')) {
-            genderClass = 'gender-male';
-          } else if (genderLower.includes('female')) {
-            genderClass = 'gender-female';
-          }
-          
-          const displayGender = gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase();
-          
-          return (
-            <span className={genderClass}>
-              {displayGender}
-            </span>
-          );
-        },
-      },
+        {
+    header: "Gender",
+    accessorKey: "gender",
+    cell: (info) => {
+        const gender = info.getValue() as string;
+
+        
+        const normalizedGender = (gender || "").trim().toLowerCase();
+
+        let genderClass = "gender-other";
+
+       
+        if (normalizedGender === "male") {
+        genderClass = "gender-male";
+        } else if (normalizedGender === "female") {
+        genderClass = "gender-female";
+        }
+
+       
+        const displayGender =
+        normalizedGender.charAt(0).toUpperCase() + normalizedGender.slice(1);
+
+        return <span className={genderClass}>{displayGender}</span>;
+    },
+    },
+
       {
         header: "Request date",
         accessorKey: "createdAt",
@@ -142,7 +143,6 @@ export const TaxTable: React.FC<TaxTableProps> = ({
         ),
       },
       {
-       
         header: () => (
           <div className="filter-header-column">
             <button

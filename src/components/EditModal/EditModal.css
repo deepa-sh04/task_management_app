@@ -125,3 +125,14 @@
   cursor: not-allowed;
   transform: none;
 }
+
+/* New style for validation errors */
+.error-message {
+    color: #ef4444; /* red-500 */
+    font-size: 0.875rem;
+    margin-top: -1rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    border-radius: 4px;
+}

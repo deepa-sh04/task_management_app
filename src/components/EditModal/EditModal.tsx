@@ -21,14 +21,18 @@ export const EditModal: React.FC<EditModalProps> = ({
 }) => {
   const [formData, setFormData] = useState<EditTaxData>(initialData);
   const [saving, setSaving] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   useEffect(() => {
     setFormData(initialData);
-  }, [initialData]);
+    setValidationError(null); // Clear error on opening/new data
+  }, [initialData, isOpen]);
 
   const handleSave = async () => {
+    setValidationError(null); // Clear previous errors
+    
     if (!formData.name.trim()) {
-      alert('Name is required');
+      setValidationError('Name is required.');
       return;
     }
 
@@ -38,6 +42,9 @@ export const EditModal: React.FC<EditModalProps> = ({
     
     if (success) {
       onClose();
+    } else {
+      // If onSave failed for other reasons (e.g., API error), display a generic error
+      setValidationError('Failed to save changes. Please try again.');
     }
   };
 
@@ -54,6 +61,11 @@ export const EditModal: React.FC<EditModalProps> = ({
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <h2>Edit Customer</h2>
         
+        {/* Display validation error message */}
+        {validationError && (
+          <div className="error-message">{validationError}</div>
+        )}
+
         <div className="form-group">
           <label htmlFor="name">Name *</label>
           <input

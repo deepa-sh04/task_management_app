@@ -25,12 +25,11 @@ export const EditModal: React.FC<EditModalProps> = ({
 
   useEffect(() => {
     setFormData(initialData);
-    setValidationError(null); // Clear error on opening/new data
+    setValidationError(null); 
   }, [initialData, isOpen]);
 
   const handleSave = async () => {
-    setValidationError(null); // Clear previous errors
-    
+    setValidationError(null); 
     if (!formData.name.trim()) {
       setValidationError('Name is required.');
       return;
@@ -43,7 +42,7 @@ export const EditModal: React.FC<EditModalProps> = ({
     if (success) {
       onClose();
     } else {
-      // If onSave failed for other reasons (e.g., API error), display a generic error
+     
       setValidationError('Failed to save changes. Please try again.');
     }
   };
@@ -61,7 +60,7 @@ export const EditModal: React.FC<EditModalProps> = ({
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <h2>Edit Customer</h2>
         
-        {/* Display validation error message */}
+        
         {validationError && (
           <div className="error-message">{validationError}</div>
         )}

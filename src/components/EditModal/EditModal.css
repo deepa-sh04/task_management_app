@@ -126,9 +126,9 @@
   transform: none;
 }
 
-/* New style for validation errors */
+
 .error-message {
-    color: #ef4444; /* red-500 */
+    color: #ef4444; 
     font-size: 0.875rem;
     margin-top: -1rem;
     margin-bottom: 1.5rem;

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -31,6 +31,24 @@ export const TaxTable: React.FC<TaxTableProps> = ({
   const [showCountryFilter, setShowCountryFilter] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
+  const filterRef = useRef<HTMLDivElement>(null);
+
+  // Close filter when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+        setShowCountryFilter(false);
+      }
+    };
+
+    if (showCountryFilter) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showCountryFilter]);
 
   const handleEdit = (tax: Tax) => {
     setEditingTax(tax);
@@ -91,32 +109,26 @@ export const TaxTable: React.FC<TaxTableProps> = ({
           </span>
         ),
       },
-        {
-    header: "Gender",
-    accessorKey: "gender",
-    cell: (info) => {
-        const gender = info.getValue() as string;
+      {
+        header: "Gender",
+        accessorKey: "gender",
+        cell: (info) => {
+          const gender = info.getValue() as string;
+          const normalizedGender = (gender || "").trim().toLowerCase();
 
-        
-        const normalizedGender = (gender || "").trim().toLowerCase();
+          let genderClass = "gender-other";
+          if (normalizedGender === "male") {
+            genderClass = "gender-male";
+          } else if (normalizedGender === "female") {
+            genderClass = "gender-female";
+          }
 
-        let genderClass = "gender-other";
+          const displayGender =
+            normalizedGender.charAt(0).toUpperCase() + normalizedGender.slice(1);
 
-       
-        if (normalizedGender === "male") {
-        genderClass = "gender-male";
-        } else if (normalizedGender === "female") {
-        genderClass = "gender-female";
-        }
-
-       
-        const displayGender =
-        normalizedGender.charAt(0).toUpperCase() + normalizedGender.slice(1);
-
-        return <span className={genderClass}>{displayGender}</span>;
-    },
-    },
-
+          return <span className={genderClass}>{displayGender}</span>;
+        },
+      },
       {
         header: "Request date",
         accessorKey: "createdAt",
@@ -147,12 +159,13 @@ export const TaxTable: React.FC<TaxTableProps> = ({
           <div className="filter-header-column">
             <button
               onClick={toggleCountryFilter}
-              className="filter-header-btn"
+              className={`filter-header-btn ${selectedCountry ? 'active' : ''}`}
               title="Filter by country"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>
               </svg>
+              {selectedCountry && <span className="filter-indicator"></span>}
             </button>
           </div>
         ),
@@ -171,7 +184,7 @@ export const TaxTable: React.FC<TaxTableProps> = ({
         ),
       },
     ],
-    []
+    [selectedCountry]
   );
 
   const table = useReactTable({
@@ -190,15 +203,15 @@ export const TaxTable: React.FC<TaxTableProps> = ({
 
   return (
     <div className="tax-table-container">
-      
+      {/* Header - Only title, no filter */}
       <div className="table-main-header">
         <h3>Tax Records</h3>
       </div>
 
-      
+      {/* Country Filter Dropdown */}
       {showCountryFilter && (
         <div className="modal-overlay" onClick={() => setShowCountryFilter(false)}>
-          <div className="country-filter-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="country-filter-modal" onClick={(e) => e.stopPropagation()} ref={filterRef}>
             <div className="modal-header">
               <h3>Filter by Country</h3>
               <button 
@@ -264,7 +277,7 @@ export const TaxTable: React.FC<TaxTableProps> = ({
         </div>
       )}
 
-      
+      {/* Table */}
       <table className="tax-table">
         <thead>
           {table.getHeaderGroups().map((hg) => (
@@ -300,7 +313,7 @@ export const TaxTable: React.FC<TaxTableProps> = ({
         </div>
       )}
 
-      
+      {/* Edit Modal */}
       {isModalOpen && (
         <EditModal
           isOpen={isModalOpen}

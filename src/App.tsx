@@ -1,41 +1,30 @@
-import React from 'react';
-import { TaxTable } from './components/TaxTable/TaxTable';
-import { Loading } from './components/Loading/Loading';
-import { useTaxData } from './hooks/useTaxData';
-import './App.css';
+import React from "react";
+import "./App.css";
+import { TaxTable } from "./components/TaxTable/TaxTable";
+import { useTaxData } from "./hooks/useTaxData";
 
 function App() {
-  const { taxes, countries, loading, error, updateTax } = useTaxData();
-
-  if (error) {
-    return (
-      <div className="app-error">
-        <h2>Error</h2>
-        <p>{error}</p>
-        <button onClick={() => window.location.reload()}>Retry</button>
-      </div>
-    );
-  }
+const { taxes, countries, updateTax, loading, error } = useTaxData();
 
   return (
     <div className="App">
-      <header className="app-header">
-        <h1>Tax Management</h1>
-        <p>Manage customer tax records</p>
-      </header>
 
-      <main className="app-main">
-        {loading && taxes.length === 0 ? (
-          <Loading />
-        ) : (
+      <div className="page-container">
+
+        <h1 className="page-title">Tax Management</h1>
+        <p className="page-subtitle">Manage customer tax records</p>
+
+        <div className="content-card">
           <TaxTable
             taxes={taxes}
             countries={countries}
-            onUpdateTax={updateTax}
+            onUpdateTax={updateTax} 
             loading={loading}
           />
-        )}
-      </main>
+        </div>
+
+      </div>
+
     </div>
   );
 }
